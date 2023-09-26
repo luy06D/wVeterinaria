@@ -1,109 +1,138 @@
-create database veterinaria;
-use veterinaria;
+CREATE DATABASE veterinaria;
+USE veterinaria;
 
-create table clientes
+CREATE TABLE clientes
 (
-idcliente 	int auto_increment primary key,
-apellidos 	varchar(40) not null,
-nombres 	varchar(40) not null,
-dni 		char(8) not null,
-claveacceso varchar(100) not null
+idcliente 	INT AUTO_INCREMENT PRIMARY KEY,
+apellidos 	VARCHAR(40) NOT NULL,
+nombres 	VARCHAR(40) NOT NULL,
+dni 		CHAR(8) NOT NULL,
+claveacceso VARCHAR(100) NOT NULL
 )
-engine = innodb;
+ENGINE = INNODB;
 
-insert into clientes (apellidos, nombres, dni , claveacceso) values
+INSERT INTO clientes (apellidos, nombres, dni , claveacceso) VALUES
 			('Cusi','Luis David', 73195465 , '123'),
             ('Gallardo','Alejandro Jesus', 73195423 , '123');
 
-create table animales
+CREATE TABLE animales
 (
-idanimal	int auto_increment primary key,
-nombreanimal		varchar(40) not null
+idanimal	INT AUTO_INCREMENT PRIMARY KEY,
+nombreanimal		VARCHAR(40) NOT NULL
 )
-engine = innodb;
+ENGINE = INNODB;
 
-insert into animales (nombreanimal) values
+INSERT INTO animales (nombreanimal) VALUES
 					('Perro'),
                     ('Gato'),
                     ('Loro');
 	
-create table razas 
+CREATE TABLE razas 
 (
-idraza	int auto_increment primary key,
-idanimal int not null,
-nombreraza	varchar(40),
-constraint fk_ida_ra foreign key (idanimal) references animales (idanimal)
+idraza	INT AUTO_INCREMENT PRIMARY KEY,
+idanimal INT NOT NULL,
+nombreraza	VARCHAR(40),
+CONSTRAINT fk_ida_ra FOREIGN KEY (idanimal) REFERENCES animales (idanimal)
 )
-engine = innodb;
+ENGINE = INNODB;
 
-insert into razas (idanimal ,nombreraza) values
+INSERT INTO razas (idanimal ,nombreraza) VALUES
 					(1, 'Pastor aleman'),
                     (1, 'Pitbul');
 
-create table mascotas
+CREATE TABLE mascotas
 (
-idmascota int auto_increment primary key,
-idcliente int not null,
-idraza 	int not null,
-nombre	varchar(40) not null,
-fotografia	varchar(200) null,
-color	varchar(30) not null,
-genero	varchar(30) not null,
-constraint fk_idc_ma foreign key (idcliente) references clientes(idcliente),
-constraint fk_idr_ma foreign key (idraza) references razas (idraza)
+idmascota INT AUTO_INCREMENT PRIMARY KEY,
+idcliente INT NOT NULL,
+idraza 	INT NOT NULL,
+nombre	VARCHAR(40) NOT NULL,
+fotografia	VARCHAR(200) NULL,
+color	VARCHAR(30) NOT NULL,
+genero	VARCHAR(30) NOT NULL,
+CONSTRAINT fk_idc_ma FOREIGN KEY (idcliente) REFERENCES clientes(idcliente),
+CONSTRAINT fk_idr_ma FOREIGN KEY (idraza) REFERENCES razas (idraza)
 
 )
-engine = innodb;
+ENGINE = INNODB;
 
-insert into mascotas (idcliente , idraza, nombre, color, genero) values
+INSERT INTO mascotas (idcliente , idraza, nombre, color, genero) VALUES
 					(1, 1 , 'Destructor', 'Crema', 'Macho'),
                     (2, 2 , 'Princesa', 'Blanco' , 'Macho') ;
                     
 								
 DELIMITER $$
-create procedure spu_add_clientes
+CREATE PROCEDURE spu_add_clientes
 (
-IN _apellidos varchar(40),
-IN _nombres	varchar(40),
-IN _dni		char(8),
-IN _claveacceso varchar(100)
+IN _apellidos VARCHAR(40),
+IN _nombres	VARCHAR(40),
+IN _dni		CHAR(8),
+IN _claveacceso VARCHAR(100)
 )
-begin
-	insert into clientes (apellidos, nombres, dni, claveacceso) values
+BEGIN
+	INSERT INTO clientes (apellidos, nombres, dni, claveacceso) VALUES
 			(_apellidos, _nombres, _dni, _claveacceso);
-end $$
+END $$
 
 
 DELIMITER $$
-create procedure spu_add_mascotas
+CREATE PROCEDURE spu_add_mascotas
 (
-IN _idcliente int,
-IN _idraza int ,
-IN _nombre varchar(40),
-IN _fotografia varchar(200),
-IN _color varchar(30),
-IN _genero varchar(30)
+IN _idcliente INT,
+IN _idraza INT ,
+IN _nombre VARCHAR(40),
+IN _fotografia VARCHAR(200),
+IN _color VARCHAR(30),
+IN _genero VARCHAR(30)
 )
-begin
-	insert into mascotas (idcliente, idraza, nombre, fotografia, color, genero) values
+BEGIN
+	INSERT INTO mascotas (idcliente, idraza, nombre, fotografia, color, genero) VALUES
 			(_idcliente, _idraza, _nombre, _fotografia, _color, _genero);
-end $$
+END $$
 
 -- BUSCAR CLIENTE (Muestra detalle mascota)
 
 DELIMITER $$
-create procedure spu_buscar_mascota(IN _idcliente int)
-begin 
+CREATE PROCEDURE spu_buscar_mascota(IN _dni CHAR(8))
+BEGIN 
 
-	select RA.nombreraza, MA.nombre, MA.color, MA.genero
-	from clientes CLI
-	inner join mascotas MA on MA.idcliente = CLI.idcliente
-    inner join razas RA on RA.idraza = MA.idraza
-    where CLI.idcliente = _idcliente;
+	SELECT RA.nombreraza, MA.nombre, MA.color, MA.genero
+	FROM clientes CLI
+	INNER JOIN mascotas MA ON MA.idcliente = CLI.idcliente
+    INNER JOIN razas RA ON RA.idraza = MA.idraza
+    WHERE CLI.dni = _dni;
 
-end $$
+END $$
 
-call spu_buscar_mascota(2);
+CALL spu_buscar_mascota(73195465);
+SELECT *FROM clientes
+
+
+DELIMITER $$ 
+CREATE PROCEDURE spu_login 
+( 
+IN _dni CHAR(8)
+)
+BEGIN 
+	SELECT *
+	FROM clientes
+	WHERE dni = _dni;
+
+END $$ 
+
+CALL spu_login(73195465);
+
+SELECT * FROM clientes
+
+
+UPDATE clientes SET claveacceso = "$2y$10$dd9CtlKw1s9CFvA/9MB82.WEYjt8PfoEipd3DF42UOBoWunIjAtfC" 
+WHERE idcliente = 1
+
+
+SELECT * FROM clientes
+
+
+
+
 
 
 

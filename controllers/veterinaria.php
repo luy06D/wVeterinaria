@@ -14,7 +14,7 @@ if(isset($_POST['op'])){
       "apellidos" => $_POST["apellidos"],
       "nombres"   => $_POST["nombres"],
       "dni"       => $_POST["dni"],
-      "claveacceso" => $_POST["claveacceso"],
+      "claveacceso" => password_hash($_POST["claveacceso"], PASSWORD_BCRYPT) 
     ];
 
     $veterinaria->addClientes($register);
@@ -37,7 +37,7 @@ if(isset($_POST['op'])){
   }
 
   if($_POST['op'] == 'buscarMascota'){
-    $data = $veterinaria->buscarMascota($_POST['idcliente']);
+    $data = $veterinaria->buscarMascota($_POST['dni']);
 
     echo json_encode($data);
 
