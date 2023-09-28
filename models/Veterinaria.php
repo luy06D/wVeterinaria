@@ -52,10 +52,10 @@ class Veterinaria extends Conexion{
   }
 
 
-  public function buscarMascota($idcliente = 0){
+  public function buscarMascota($dni = 0){
     try{
       $query = $this->access->prepare("CALL spu_buscar_mascota(?)");
-      $query->execute(array($idcliente));
+      $query->execute(array($dni));
       return $query->fetch(PDO::FETCH_ASSOC);
       
     }catch(Exception $e){

@@ -37,7 +37,7 @@ if(isset($_POST['op'])){
   }
 
   if($_POST['op'] == 'buscarMascota'){
-    $data = $veterinaria->buscarMascota($_POST['idcliente']);
+    $data = $veterinaria->buscarMascota($_POST['dni']);
 
     echo json_encode($data);
 
